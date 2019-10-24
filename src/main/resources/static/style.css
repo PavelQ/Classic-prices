@@ -1,0 +1,19 @@
+table
+{
+  border: 5px solid #900;
+  background: #fff;
+}
+tr
+{
+  border: 5px solid #090;
+}
+td
+{
+  background: #ccc;
+  padding: 5px 0;
+}
+
+table + table
+{
+  border-collapse: collapse;
+}
