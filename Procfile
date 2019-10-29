@@ -1,1 +1,1 @@
-web: java -jar target/prices.war
+web: java -Dserver.port=$PORT -jar target/prices.war
