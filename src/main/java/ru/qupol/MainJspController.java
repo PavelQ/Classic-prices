@@ -14,6 +14,8 @@ import java.util.*;
 public class MainJspController {
 
 
+    private final Map<String, Set<SourceCacheHolder>> parserHoldersSet = initParserHolders();
+
     @RequestMapping(value = "/prices")
     public String prices(@RequestParam(name = "sources", required = false) String sources, Model model) {
         List<Price> priceList = takeAllDataSorted(sources);
@@ -32,31 +34,11 @@ public class MainJspController {
     }
 
     private List<Price> takeAllDataSorted(String sources) {
-        List<Price> priceList = new ArrayList<>();
-        if (sources == null || sources.isEmpty()) {
-            priceList.addAll(new PwlvlEuSourceParcer().parse());
-            priceList.addAll((new PwlvlRuSourceParser()).parse());
-            priceList.addAll((new FunpayEuSourceParcer()).parse());
-            priceList.addAll((new FunpayRuSourceParser()).parse());
-            priceList.addAll((new PlayerAuctionsSourceParser()).parse());
-        } else {
-            if (sources.contains("pw")) {
-                priceList.addAll(new PwlvlEuSourceParcer().parse());
-                priceList.addAll((new PwlvlRuSourceParser()).parse());
-            }
-            if (sources.contains("f")) {
-                priceList.addAll((new FunpayEuSourceParcer()).parse());
-                priceList.addAll((new FunpayRuSourceParser()).parse());
-            }
-            if (sources.contains("pa")) {
-                priceList.addAll((new PlayerAuctionsSourceParser()).parse());
-            }
-        }
+        List<Price> priceList = loadData(sources);
         Collections.sort(priceList);
         setPopulations(priceList);
         return priceList;
     }
-
 
     private Map<String, Set<SourceCacheHolder>> initParserHolders() {
         Map<String, Set<SourceCacheHolder>> map = new HashMap<>();
@@ -72,5 +54,25 @@ public class MainJspController {
         return map;
     }
 
+    private List<Price> loadData(String sources) {
+        Set<String> parserCodes = parserHoldersSet.keySet();
+        Set<SourceCacheHolder> cachesToLoad = new HashSet<>();
+        if (sources == null || sources.isEmpty()) {
+            for (Set<SourceCacheHolder> set : parserHoldersSet.values()) {
+                cachesToLoad.addAll(set);
+            }
+        } else {
+            for (String parserCode : parserCodes) {
+                if (sources.contains(parserCode)) {
+                    cachesToLoad.addAll(parserHoldersSet.get(parserCode));
+                }
+            }
+        }
+        List<Price> dataList = new ArrayList<>();
+        for (SourceCacheHolder cacheHolder : cachesToLoad) {
+            dataList.addAll(cacheHolder.loadData(false));
+        }
+        return dataList;
 
+    }
 }

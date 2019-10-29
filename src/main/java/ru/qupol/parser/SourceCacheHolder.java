@@ -1,11 +1,15 @@
 package ru.qupol.parser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.qupol.model.Price;
 
 import java.util.Date;
 import java.util.List;
 
 public class SourceCacheHolder {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SourceCacheHolder.class);
 
     private SourceParcer sourceParcer;
 
@@ -29,12 +33,14 @@ public class SourceCacheHolder {
     public List<Price> loadData(Boolean force) {
         if (loadDate == null || loadedData == null
                 || force
-                || loadDate.after(new Date(loadDate.getTime() + lifetime))) {
+                || (new Date()).after(new Date(loadDate.getTime() + lifetime))) {
+            LOGGER.info("loading new data: " + sourceParcer.getClass().getName());
             loadDate = new Date();
             loadedData = sourceParcer.parse();
             return loadedData;
         }
 
+        LOGGER.info("returns existed data: " + sourceParcer.getClass().getName());
         return loadedData;
     }
 
