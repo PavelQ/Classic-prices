@@ -22,7 +22,8 @@ public class MainJspController {
     @RequestMapping(value = "/prices")
     public String prices(@RequestParam(name = "sources", required = false) String sources, Model model) {
         List<Price> priceList = takeAllDataSorted(sources);
-        model.addAttribute("message", "Data generated with next params:" + sources);
+        String message = sources == null ? "" : "Data generated with next params:" + sources;
+        model.addAttribute("message", message);
         model.addAttribute("prices", priceList);
         return "prices";
 
