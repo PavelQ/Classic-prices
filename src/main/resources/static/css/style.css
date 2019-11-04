@@ -1,0 +1,7 @@
+table {width: 100%; border-collapse: collapse;}
+table thead tr {color: #ffffff; font-weight: bold; background: #BFB193;}
+table thead tr td {border: 1px solid #01ab73;}
+table tbody tr td {border: 1px solid #e8e9eb;}
+table tbody tr:hover {background: #BFBBAE;}
+tr.alliance-row {background: #8f99bf;}
+tr.horde-row {background: #bf9f9a;}
