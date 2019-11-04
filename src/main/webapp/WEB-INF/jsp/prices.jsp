@@ -3,10 +3,10 @@
 <html>
 <head>
     <meta charset="WIN-1251"/>
-    <title>Welcome</title>
+    <title>Data prices</title>
     <link href="css/jquerysctipttop.css" rel="stylesheet" type="text/css"/>
-    <link href="css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="css/style.css" rel="stylesheet"/>
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="css/style.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <h1>${message}</h1>
