@@ -22,14 +22,14 @@ public class MainJspController {
     @RequestMapping(value = "/prices")
     public String prices(@RequestParam(name = "sources", required = false) String sources, Model model) {
         List<Price> priceList = takeAllDataSorted(sources);
-        model.addAttribute("message", sources);
+        model.addAttribute("message", "Data generated with next params:" + sources);
         model.addAttribute("prices", priceList);
         return "prices";
 
     }
 
     @RequestMapping(value = "/test")
-    public  String test(Model model){
+    public String test(Model model) {
         model.addAttribute("message", "test response");
         return "testj";
     }
