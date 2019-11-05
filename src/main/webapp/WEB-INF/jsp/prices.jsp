@@ -33,6 +33,14 @@
             <span class="js-sorter-asc     glyphicon glyphicon-chevron-down pull-right"></span>
             <span class="js-sorter-desc     glyphicon glyphicon-chevron-up pull-right"></span>
         </th>
+        <th>type
+            <span class="js-sorter-asc     glyphicon glyphicon-chevron-down pull-right"></span>
+            <span class="js-sorter-desc     glyphicon glyphicon-chevron-up pull-right"></span>
+        </th>
+        <th>location
+            <span class="js-sorter-asc     glyphicon glyphicon-chevron-down pull-right"></span>
+            <span class="js-sorter-desc     glyphicon glyphicon-chevron-up pull-right"></span>
+        </th>
     </TR>
     <TR>
         <th><input class="js-filter form-control" type="text" value=""></th>
@@ -41,6 +49,8 @@
             <option value="HORDE">HORDE</option>
             <option value="ALIANCE">ALIANCE</option>
         </select></th>
+        <th><input class="js-filter form-control" type="text" value=""></th>
+        <th><input class="js-filter form-control" type="text" value=""></th>
         <th><input class="js-filter form-control" type="text" value=""></th>
         <th><input class="js-filter form-control" type="text" value=""></th>
         <th><input class="js-filter form-control" type="text" value=""></th>
@@ -53,7 +63,9 @@
                 <td>${price.server.faction}</td>
                 <td>${price.price}</td>
                 <td>${price.source}</td>
-                <td>${price.population}</td>
+                <td>${price.serverStatus.population}</td>
+                <td>${price.serverStatus.serverType}</td>
+                <td>${price.serverStatus.serverLocation}</td>
             </tr>
         </c:forEach>
     </tbody>

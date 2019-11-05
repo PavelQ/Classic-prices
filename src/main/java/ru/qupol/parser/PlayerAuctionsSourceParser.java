@@ -174,10 +174,14 @@ public class PlayerAuctionsSourceParser implements SourceParcer {
             serverNameCodeMap.put("Bloodfang - Horde", 8897);
             serverNameCodeMap.put("Chromie - Alliance", 8815);
             serverNameCodeMap.put("Chromie - Horde", 8816);
+            serverNameCodeMap.put("Dragonfang - Alliance", 9003);
+            serverNameCodeMap.put("Dragonfang - Horde", 9004);
             serverNameCodeMap.put("Dragon's Call - Alliance", 8898);
             serverNameCodeMap.put("Dragon's Call - Horde", 8899);
             serverNameCodeMap.put("Dreadmist - Alliance", 8900);
             serverNameCodeMap.put("Dreadmist - Horde", 8901);
+            serverNameCodeMap.put("Earthshaker - Alliance", 9005);
+            serverNameCodeMap.put("Earthshaker - Horde", 9004);
             serverNameCodeMap.put("Everlook - Alliance", 8811);
             serverNameCodeMap.put("Everlook - Horde", 8812);
             serverNameCodeMap.put("Finkle - Alliance", 8902);
@@ -194,6 +198,10 @@ public class PlayerAuctionsSourceParser implements SourceParcer {
             serverNameCodeMap.put("Gehennas - Horde", 8794);
             serverNameCodeMap.put("Golemagg - Alliance", 8795);
             serverNameCodeMap.put("Golemagg - Horde", 8796);
+            serverNameCodeMap.put("Harbringer of Doom - Alliance", 9007);
+            serverNameCodeMap.put("Harbringer of Doom - Horde", 9006);
+            serverNameCodeMap.put("Heartstriker - Alliance", 9009);
+            serverNameCodeMap.put("Heartstriker - Horde", 9008);
             serverNameCodeMap.put("Hydraxian Waterlords - Alliance", 8797);
             serverNameCodeMap.put("Hydraxian Waterlords - Horde", 8798);
             serverNameCodeMap.put("Judgement - Alliance", 8904);
@@ -202,6 +210,8 @@ public class PlayerAuctionsSourceParser implements SourceParcer {
             serverNameCodeMap.put("Lakeshire - Horde", 8907);
             serverNameCodeMap.put("Lucifron - Alliance", 8813);
             serverNameCodeMap.put("Lucifron - Horde", 8814);
+            serverNameCodeMap.put("Mandokir - Alliance", 9011);
+            serverNameCodeMap.put("Mandokir - Horde", 9010);
             serverNameCodeMap.put("Mirage Raceway - Alliance", 8799);
             serverNameCodeMap.put("Mirage Raceway - Horde", 8800);
             serverNameCodeMap.put("Mograine - Alliance", 8847);

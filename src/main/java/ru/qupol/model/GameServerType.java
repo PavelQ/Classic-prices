@@ -6,7 +6,7 @@ public enum GameServerType {
     RP,
     PVP_RP;
 
-    static GameServerType getType(String stringValue) {
+    public static GameServerType getType(String stringValue) {
         switch (stringValue) {
             case "PvP":
                 return PVP;

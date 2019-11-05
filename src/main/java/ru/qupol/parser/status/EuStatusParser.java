@@ -1,14 +1,20 @@
 package ru.qupol.parser.status;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ClassPathResource;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import ru.qupol.model.GameServerType;
 import ru.qupol.model.ServerStatus;
 
-import java.io.File;
-import java.net.URL;
-import java.nio.charset.Charset;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,85 +22,42 @@ public class EuStatusParser implements StatusParser {
 
     //    private static final String LINK = "https://worldofwarcraft.com/en-us/game/status/classic-eu";
     private final int TIMEOUT = 5000;
+    private static final Logger LOGGER = LoggerFactory.getLogger(EuStatusParser.class);
 
-    public Map<String, ServerStatus> parse() {
+    private Map<String, ServerStatus> mapServerStatus = null;
 
-        Document document = null;
-        try {
-            document = Jsoup.parse(new File("statuses.xml"), Charset.defaultCharset().name());
-//            document = Jsoup.parse(new URL(LINK), TIMEOUT);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        Elements elements = document.getElementsByClass("Table-row");
-
-        for (Element element : elements) {
-            Elements cols = element.getElementsByTag("div");
-            String serverName = cols.get(1).text();
-            System.out.println(serverName);
-        }
-
-        return null;
+    public Map<String, ServerStatus> getServerStatusMap() {
+        if (mapServerStatus != null)
+            return mapServerStatus;
+        mapServerStatus = parse();
+        return mapServerStatus;
     }
 
-    public static Map<String, String> mapPopulation = null;
-
-    public static Map<String, String> getMapNamePopulation() {
-        if (mapPopulation != null) {
-            return mapPopulation;
+    public Map<String, ServerStatus> parse() {
+        ClassPathResource cpr = new ClassPathResource("statuses.xml");
+        Document document = null;
+        try {
+            DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            document = documentBuilder.parse(cpr.getFile());
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            LOGGER.error("Parse error " + e.getMessage(), e);
         }
-        Map<String, String> map = new HashMap<>();
-        map.put("Amnennar", "Full");
-        map.put("Ashbringer", "Full");
-        map.put("Auberdine", "Full");
-        map.put("Bloodfang", "High");
-        map.put("Chromie", "High");
-        map.put("Dragon's Call", "Full");
-        map.put("Dragonfang", "Medium");
-        map.put("Dreadmist", "Full");
-        map.put("Earthshaker", "Medium");
-        map.put("Everlook", "Full");
-        map.put("Finkle", "High");
-        map.put("Firemaw", "Full");
-        map.put("Flamegor", "Full");
-        map.put("Flamelash", "Full");
-        map.put("Gandling", "Full");
-        map.put("Gehennas", "Full");
-        map.put("Golemagg", "Full");
-        map.put("Harbinger of Doom", "Medium");
-        map.put("Heartstriker", "Medium");
-        map.put("Hydraxian Waterlords", "Medium");
-        map.put("Judgement", "Medium");
-        map.put("Lakeshire", "Full");
-        map.put("Lucifron", "Full");
-        map.put("Mandokir", "High");
-        map.put("Mirage Raceway", "Full");
-        map.put("Mograine", "Full");
-        map.put("Nethergarde Keep", "Full");
-        map.put("Noggenfogger", "Full");
-        map.put("Patchwerk", "Full");
-        map.put("Pyrewood Village", "Full");
-        map.put("Razorfen", "Full");
-        map.put("Razorgore", "Full");
-        map.put("Rhok'delar", "Full");
-        map.put("Shazzrah", "Full");
-        map.put("Skullflame", "High");
-        map.put("Stonespine", "Full");
-        map.put("Sulfuron", "Full");
-        map.put("Ten Storms", "High");
-        map.put("Transcendence", "Full");
-        map.put("Venoxis", "Full");
-        map.put("Wyrmthalak", "Full");
-        map.put("Zandalar Tribe", "Full");
+        Element root = document.getDocumentElement();
+        NodeList servers = root.getChildNodes();
 
-        map.put("Хроми", "-");
-        map.put("Рок-Делар", "-");
-        map.put("Пламегор", "-");
-        map.put("Змейталак", "-");
-        map.put("Вестник Рока", "-");
-        mapPopulation = map;
-        return mapPopulation;
+        Map<String, ServerStatus> map = new HashMap<>();
+
+        for (int i = 1; i < servers.getLength(); i += 2) {
+            Node server = servers.item(i);
+            NodeList values = server.getChildNodes();
+            ServerStatus serverStatus = new ServerStatus();
+            serverStatus.setServerName(values.item(1).getTextContent());
+            serverStatus.setServerType(GameServerType.getType(values.item(3).getTextContent()));
+            serverStatus.setPopulation(values.item(5).getTextContent());
+            serverStatus.setServerLocation(values.item(9).getTextContent());
+            map.put(serverStatus.getServerName(), serverStatus);
+        }
+
+        return map;
     }
 }

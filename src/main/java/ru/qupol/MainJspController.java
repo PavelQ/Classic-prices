@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.qupol.model.Price;
+import ru.qupol.model.ServerStatus;
 import ru.qupol.parser.*;
 import ru.qupol.parser.status.EuStatusParser;
 
@@ -29,16 +30,12 @@ public class MainJspController {
 
     }
 
-    @RequestMapping(value = "/test")
-    public String test(Model model) {
-        model.addAttribute("message", "test response");
-        return "testj";
-    }
 
     private void setPopulations(List<Price> prices) {
+        Map<String, ServerStatus> serverStatusMap = (new EuStatusParser()).getServerStatusMap();
         for (Price price : prices) {
-            String population = EuStatusParser.getMapNamePopulation().get(price.getServer().getName());
-            price.setPopulation(population);
+            ServerStatus serverStatus = serverStatusMap.get(price.getServer().getName());
+            price.setServerStatus(serverStatus);
         }
 
     }

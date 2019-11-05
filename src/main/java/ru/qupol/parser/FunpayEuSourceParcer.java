@@ -38,6 +38,8 @@ public class FunpayEuSourceParcer implements SourceParcer {
             Price price = new Price();
 
             String serverName = row.getElementsByClass("tc-server").text();
+            if (serverName.contains("’"))
+                serverName = serverName.replace('’', '\'');
             if (serverName.equals("Любой")) continue;
 
             String faction = row.getElementsByClass("tc-side").text();

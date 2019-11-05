@@ -11,15 +11,10 @@ public class Price implements Comparable<Price> {
     private Date checkDate;
     private String seller;
     private GameServer server;
-    private String population;
+    private ServerStatus serverStatus;
 
-    public String getPopulation() {
-        return population;
-    }
 
-    public void setPopulation(String population) {
-        this.population = population;
-    }
+
 
     public float getPrice() {
         return price;
@@ -67,6 +62,14 @@ public class Price implements Comparable<Price> {
 
     public void setServer(GameServer server) {
         this.server = server;
+    }
+
+    public ServerStatus getServerStatus() {
+        return serverStatus;
+    }
+
+    public void setServerStatus(ServerStatus serverStatus) {
+        this.serverStatus = serverStatus;
     }
 
     @Override
