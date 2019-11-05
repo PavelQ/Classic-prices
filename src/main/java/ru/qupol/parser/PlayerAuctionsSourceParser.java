@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.Phaser;
 
 public class PlayerAuctionsSourceParser implements SourceParcer {
 
@@ -29,19 +30,27 @@ public class PlayerAuctionsSourceParser implements SourceParcer {
 
     @Override
     public List<Price> parse() {
-        List<Price> priceList = new ArrayList<>();
+        List<Price> priceList = Collections.synchronizedList(new ArrayList<>());
+        Phaser phaser = new Phaser();
         for (String serverFullName : ServerId.serverNameCodeMap.keySet()) {
-            Price price = null;
-            try {
-                price = parse1Server(serverFullName);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            if (price != null)
-                priceList.add(price);
+            new Thread(() -> {
+                Price price;
+                phaser.register();
+                try {
+                    price = parse1Server(serverFullName);
+                } catch (Exception e) {
+                    LOGGER.error("parse error: " + e.getMessage(), e);
+                    phaser.arriveAndDeregister();
+                    return;
+                }
+                if (price != null) {
+                    priceList.add(price);
+                }
+                phaser.arrive();
+            }).start();
         }
+        phaser.awaitAdvance(0);
         LOGGER.info("parsing done");
-
         return priceList;
     }
 
@@ -50,11 +59,12 @@ public class PlayerAuctionsSourceParser implements SourceParcer {
         int serverId = ServerId.serverNameCodeMap.get(serverFullName);
         String serverSource = generateLink(serverId);
 
-        Document document = null;
+        Document document;
         try {
             document = Jsoup.parse(new URL(serverSource), TIMEOUT);
         } catch (MalformedURLException e) {
             LOGGER.error("error on make url " + serverSource + " server name: " + serverFullName, e);
+            throw e;
         } catch (IOException e) {
             LOGGER.error("can't parse " + serverFullName, e);
             throw e;
