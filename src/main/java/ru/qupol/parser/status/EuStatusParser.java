@@ -38,14 +38,17 @@ public class EuStatusParser implements StatusParser {
         Document document = null;
         try {
             DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            document = documentBuilder.parse(cpr.getFile());
+            document = documentBuilder.parse(cpr.getInputStream());
         } catch (ParserConfigurationException | IOException | SAXException e) {
             LOGGER.error("Parse error " + e.getMessage(), e);
+        }
+        Map<String, ServerStatus> map = new HashMap<>();
+        if (document == null) {
+            return map;
         }
         Element root = document.getDocumentElement();
         NodeList servers = root.getChildNodes();
 
-        Map<String, ServerStatus> map = new HashMap<>();
 
         for (int i = 1; i < servers.getLength(); i += 2) {
             Node server = servers.item(i);
