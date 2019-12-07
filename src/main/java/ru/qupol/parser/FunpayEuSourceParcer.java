@@ -54,7 +54,7 @@ public class FunpayEuSourceParcer implements SourceParcer {
             price.setSource(ServerSource.FUNPAY);
             price.setCheckDate(new Date());
             price.setCurrency(Currency.RUB);
-            String priceCount = row.getElementsByClass("tc-price price").text();
+            String priceCount = row.getElementsByClass("tc-price").text();
             if (priceCount.trim().isEmpty()) {
                 LOGGER.error("wrong price: " + priceCount + " " + gameServer);
                 continue;

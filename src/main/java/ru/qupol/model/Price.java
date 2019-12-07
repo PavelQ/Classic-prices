@@ -14,8 +14,6 @@ public class Price implements Comparable<Price> {
     private ServerStatus serverStatus;
 
 
-
-
     public float getPrice() {
         return price;
     }
@@ -87,12 +85,9 @@ public class Price implements Comparable<Price> {
     @Override
     public int compareTo(Price o) {
         int comp = this.server.compareTo(o.server);
-        if (comp == 0) {
-            if (this.price > o.price)
-                return 1;
-            else if (this.price < o.price)
-                return -1;
-            return 0;
-        } else return comp;
+        if (comp != 0) {
+            return comp;
+        }
+        return Float.compare(this.price, o.price);
     }
 }
