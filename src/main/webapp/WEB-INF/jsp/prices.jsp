@@ -7,6 +7,8 @@
     <link href="css/jquerysctipttop.css" rel="stylesheet" type="text/css"/>
     <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
     <link href="css/style.css" rel="stylesheet" type="text/css"/>
+    <script src="js/jquery-1.11.3.min.js"></script>
+    <script src="js/script.js"></script>
 </head>
 <body>
 <h1>${message}</h1>
@@ -57,23 +59,21 @@
     </TR>
     </thead>
     <tbody>
-        <c:forEach items="${prices}" var="price">
-            <tr>
-                <td>${price.server.name}</td>
-                <td>${price.server.faction}</td>
-                <td>${price.price}</td>
-                <td>${price.source}</td>
-                <td>${price.serverStatus.population}</td>
-                <td>${price.serverStatus.serverType}</td>
-                <td>${price.serverStatus.serverLocation}</td>
-            </tr>
-        </c:forEach>
+    <c:forEach items="${prices}" var="price">
+        <tr>
+            <td>${price.server.name}</td>
+            <td>${price.server.faction}</td>
+            <td>${price.price}</td>
+            <td>${price.source}</td>
+            <td>${price.serverStatus.population}</td>
+            <td>${price.serverStatus.serverType}</td>
+            <td>${price.serverStatus.serverLocation}</td>
+        </tr>
+    </c:forEach>
     </tbody>
 </table>
 
-<script src="js/jquery-1.11.3.min.js"></script>
 <script src="js/dynamitable.jquery.min.js"></script>
-<script src="js/script.js"></script>
 </body>
 
 </html>
