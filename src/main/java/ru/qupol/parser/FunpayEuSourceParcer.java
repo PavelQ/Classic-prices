@@ -1,6 +1,5 @@
 package ru.qupol.parser;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -12,25 +11,28 @@ import ru.qupol.model.GameServer;
 import ru.qupol.model.Price;
 import ru.qupol.model.ServerSource;
 
-import java.net.URL;
 import java.util.*;
 
-public class FunpayEuSourceParcer implements SourceParcer {
+public class FunpayEuSourceParcer extends SourceParcer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FunpayEuSourceParcer.class);
 
     private final int TIMEOUT = 5000;
     protected String serverSource = "https://funpay.ru/chips/118/";
 
+
     @Override
-    public List<Price> parse() {
-        Document document;
-        try {
-            document = Jsoup.parse(new URL(serverSource), TIMEOUT);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    public String getServerSource() {
+        return serverSource;
+    }
+
+    @Override
+    public int getTimeout() {
+        return TIMEOUT;
+    }
+
+    @Override
+    public List<Price> handleDocument(Document document) {
         Elements rows = document.getElementsByClass("tc-item");
         List<Price> priceList = new ArrayList<>();
         for (Element row : rows) {

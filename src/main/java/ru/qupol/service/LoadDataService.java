@@ -1,11 +1,8 @@
-package ru.qupol;
+package ru.qupol.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.stereotype.Service;
 import ru.qupol.model.Price;
 import ru.qupol.model.ServerStatus;
 import ru.qupol.parser.*;
@@ -13,23 +10,11 @@ import ru.qupol.parser.status.EuStatusParser;
 
 import java.util.*;
 
-@Controller
-public class MainJspController {
+@Service
+public class LoadDataService {
+    private final Logger LOGGER = LoggerFactory.getLogger(LoadDataService.class);
 
-
-    private final Logger LOGGER = LoggerFactory.getLogger(MainJspController.class);
     private final Map<String, Set<SourceCacheHolder>> parserHoldersSet = initParserHolders();
-
-    @RequestMapping(value = "/prices")
-    public String prices(@RequestParam(name = "sources", required = false) String sources, Model model) {
-        List<Price> priceList = takeAllDataSorted(sources);
-        String message = sources == null ? "" : "Data generated with next params:" + sources;
-        model.addAttribute("message", message);
-        model.addAttribute("prices", priceList);
-        return "prices";
-
-    }
-
 
     private void setPopulations(List<Price> prices) {
         Map<String, ServerStatus> serverStatusMap = (new EuStatusParser()).getServerStatusMap();
@@ -40,7 +25,7 @@ public class MainJspController {
 
     }
 
-    private List<Price> takeAllDataSorted(String sources) {
+    public List<Price> takeAllDataSorted(String sources) {
         List<Price> priceList = loadData(sources);
         Collections.sort(priceList);
         setPopulations(priceList);
@@ -50,11 +35,11 @@ public class MainJspController {
     private Map<String, Set<SourceCacheHolder>> initParserHolders() {
         LOGGER.info("init parsers");
         Map<String, Set<SourceCacheHolder>> map = new HashMap<>();
-        map.put("pw", new HashSet<SourceCacheHolder>() {{
+        map.put("pw", new HashSet<>() {{
             add(new SourceCacheHolder(new PwlvlEuSourceParcer()));
             add(new SourceCacheHolder(new PwlvlRuSourceParser()));
         }});
-        map.put("f", new HashSet<SourceCacheHolder>() {{
+        map.put("f", new HashSet<>() {{
             add(new SourceCacheHolder(new FunpayEuSourceParcer()));
             add(new SourceCacheHolder(new FunpayRuSourceParser()));
         }});
@@ -88,4 +73,5 @@ public class MainJspController {
         return dataList;
 
     }
+
 }

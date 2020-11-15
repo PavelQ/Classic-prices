@@ -17,7 +17,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.Phaser;
 
-public class PlayerAuctionsSourceParser implements SourceParcer {
+public class PlayerAuctionsSourceParser extends SourceParcer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerAuctionsSourceParser.class);
 
@@ -25,11 +25,22 @@ public class PlayerAuctionsSourceParser implements SourceParcer {
     //    "https://www.playerauctions.com/wowc-gold/?sPid=8582&Serverid=8920&Quantity=50&PageIndex=1"
     private String serverBaseSource = "https://www.playerauctions.com/wowc-gold/";
 
-    private float usdToRub = 63.0f;
+
+    private float usdToRub = 78.0f;
 
 
     @Override
-    public List<Price> parse() {
+    public String getServerSource() {
+        return serverBaseSource;
+    }
+
+    @Override
+    public int getTimeout() {
+        return TIMEOUT;
+    }
+
+    @Override
+    public List<Price> handleDocument(Document document) {
         List<Price> priceList = Collections.synchronizedList(new ArrayList<>());
         Phaser phaser = new Phaser();
         for (String serverFullName : ServerId.serverNameCodeMap.keySet()) {
@@ -39,7 +50,7 @@ public class PlayerAuctionsSourceParser implements SourceParcer {
                 try {
                     price = parse1Server(serverFullName);
                 } catch (Exception e) {
-                    LOGGER.error("parse error: " + e.getMessage(), e);
+                    LOGGER.error("parse error (server=" + serverFullName + "]", e);
                     phaser.arriveAndDeregister();
                     return;
                 }
