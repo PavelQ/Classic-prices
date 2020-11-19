@@ -2,19 +2,40 @@ package ru.qupol.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.qupol.model.Price;
 import ru.qupol.model.ServerStatus;
 import ru.qupol.parser.*;
 import ru.qupol.parser.status.EuStatusParser;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
 public class LoadDataService {
     private final Logger LOGGER = LoggerFactory.getLogger(LoadDataService.class);
+    private Map<String, Set<SourceCacheHolder>> parserHoldersSet;
 
-    private final Map<String, Set<SourceCacheHolder>> parserHoldersSet = initParserHolders();
+    @Autowired
+    private PwlvlEuSourceParcer pwlvlEuSourceParser;
+
+    @Autowired
+    private PwlvlRuSourceParser pwlvlRuSourceParser;
+
+    @Autowired
+    private FunpayEuSourceParcer funpayEuSourceParcer;
+
+    @Autowired
+    private FunpayRuSourceParser funpayRuSourceParser;
+
+    @Autowired
+    private PlayerAuctionsSourceParser playerAuctionsSourceParser;
+
+    @PostConstruct
+    public void postConstruct() {
+        parserHoldersSet = initParserHolders();
+    }
 
     private void setPopulations(List<Price> prices) {
         Map<String, ServerStatus> serverStatusMap = (new EuStatusParser()).getServerStatusMap();
@@ -36,15 +57,16 @@ public class LoadDataService {
         LOGGER.info("init parsers");
         Map<String, Set<SourceCacheHolder>> map = new HashMap<>();
         map.put("pw", new HashSet<>() {{
-            add(new SourceCacheHolder(new PwlvlEuSourceParcer()));
-            add(new SourceCacheHolder(new PwlvlRuSourceParser()));
+            add(new SourceCacheHolder(pwlvlEuSourceParser));
+            add(new SourceCacheHolder(pwlvlRuSourceParser));
         }});
         map.put("f", new HashSet<>() {{
-            add(new SourceCacheHolder(new FunpayEuSourceParcer()));
-            add(new SourceCacheHolder(new FunpayRuSourceParser()));
+            add(new SourceCacheHolder(funpayEuSourceParcer));
+            add(new SourceCacheHolder(funpayRuSourceParser));
         }});
-        map.put("pa", Collections.singleton(new SourceCacheHolder(new PlayerAuctionsSourceParser())));
-        LOGGER.info("parsers initiated: " + map.size());
+        map.put("pa", Collections.singleton(new SourceCacheHolder(playerAuctionsSourceParser)));
+        int parsersCount = map.values().stream().map(Set::size).reduce(0, Integer::sum);
+        LOGGER.info("parsers initiated: " + parsersCount);
         return map;
     }
 

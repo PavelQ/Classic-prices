@@ -6,27 +6,51 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import ru.qupol.exception.parser.ValuteLoadException;
 import ru.qupol.model.Currency;
 import ru.qupol.model.GameServer;
 import ru.qupol.model.Price;
 import ru.qupol.model.ServerSource;
+import ru.qupol.service.ValuteExtractService;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.Phaser;
 
+@Component
 public class PlayerAuctionsSourceParser extends SourceParcer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerAuctionsSourceParser.class);
+
+    @Autowired
+    private ValuteExtractService valuteExtractService;
 
     private final int TIMEOUT = 100000;
     //    "https://www.playerauctions.com/wowc-gold/?sPid=8582&Serverid=8920&Quantity=50&PageIndex=1"
     private String serverBaseSource = "https://www.playerauctions.com/wowc-gold/";
 
 
-    private float usdToRub = 78.0f;
+    private float usdToRub;
+
+    public float getUsdToRub() {
+        if (usdToRub == 0) {
+            try {
+                if (valuteExtractService != null) {
+                    String usdToRubString = valuteExtractService.getUSDValute().getValue();
+                    usdToRub = Float.parseFloat(usdToRubString.replace(',', '.'));
+                }
+            } catch (ValuteLoadException e) {
+                LOGGER.error("can't load USD valute", e);
+                throw new RuntimeException(e);
+            }
+        }
+        return usdToRub;
+    }
 
 
     @Override
@@ -54,9 +78,8 @@ public class PlayerAuctionsSourceParser extends SourceParcer {
                     phaser.arriveAndDeregister();
                     return;
                 }
-                if (price != null) {
-                    priceList.add(price);
-                }
+                priceList.add(price);
+                
                 phaser.arrive();
             }).start();
         }
@@ -88,7 +111,8 @@ public class PlayerAuctionsSourceParser extends SourceParcer {
         String seller = offerElements.get(1).getElementsByTag("div").first().text();
         String offerPrice = offerItem.getElementsByClass("offer-price").first().text();
 
-        float lowPrice = getPriceRubPerGold(getPricePerUsd(offerPrice));
+        float rubPerGold = getPriceRubPerGold(getPricePerUsd(offerPrice));
+        float lowPrice = Float.parseFloat((new DecimalFormat("#.##")).format(rubPerGold).replace(',', '.'));
         Price price = new Price();
         price.setSeller(seller);
         price.setPrice(lowPrice);
@@ -108,7 +132,7 @@ public class PlayerAuctionsSourceParser extends SourceParcer {
     }
 
     private float getPriceRubPerGold(float pricePerUsd) {
-        return usdToRub / pricePerUsd;
+        return getUsdToRub() / pricePerUsd;
     }
 
     private GameServer.Faction getFaction(String serverFullName) {

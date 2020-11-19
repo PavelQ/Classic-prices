@@ -1,13 +1,11 @@
 package ru.qupol.parser;
 
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.qupol.Utils;
-import ru.qupol.exception.parser.SourceLoadException;
 import ru.qupol.model.Currency;
 import ru.qupol.model.GameServer;
 import ru.qupol.model.Price;
