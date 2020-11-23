@@ -12,7 +12,7 @@ class ValuteExtractServiceTest {
 
     @Test
     public void loadAllURL_successful() throws ValuteLoadException {
-        var valutes = valuteExtractService.ExtractXMLCurrencies();
+        var valutes = valuteExtractService.extractXMLCurrencies();
         assertFalse(valutes.isEmpty());
     }
 

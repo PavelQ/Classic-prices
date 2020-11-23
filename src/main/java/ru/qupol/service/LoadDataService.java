@@ -71,6 +71,25 @@ public class LoadDataService {
     }
 
     private List<Price> loadData(String sources) {
+        Set<SourceCacheHolder> cachesToLoad = cachesToLoadBySources(sources);
+        List<Price> dataList = new ArrayList<>();
+        LOGGER.info("starting parsers work");
+        cachesToLoad.forEach(cacheToLoad -> dataList.addAll(cacheToLoad.loadData(false)));
+        return dataList;
+
+    }
+
+    public void updateData(String sources) {
+        Set<SourceCacheHolder> sourcesToUpdate = cachesToLoadBySources(sources);
+        LOGGER.info("starting parsers work");
+        parserHoldersSet.values().forEach(
+                sourceCacheHolders -> sourcesToUpdate.forEach(
+                        sourceCacheHolder -> sourceCacheHolder.loadData(true)
+                )
+        );
+    }
+
+    private Set<SourceCacheHolder> cachesToLoadBySources(String sources) {
         LOGGER.info("preparing parsers");
         Set<String> parserCodes = parserHoldersSet.keySet();
         Set<SourceCacheHolder> cachesToLoad = new HashSet<>();
@@ -87,13 +106,7 @@ public class LoadDataService {
                 }
             }
         }
-        List<Price> dataList = new ArrayList<>();
-        LOGGER.info("starting parsers work");
-        for (SourceCacheHolder cacheHolder : cachesToLoad) {
-            dataList.addAll(cacheHolder.loadData(false));
-        }
-        return dataList;
-
+        return cachesToLoad;
     }
 
 }

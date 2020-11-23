@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
+<%@ page import="java.util.stream.Collectors" %>
 <html>
 <head>
     <meta charset="WIN-1251"/>
@@ -12,6 +13,10 @@
 </head>
 <body>
 <h1>${message}</h1>
+<input type="hidden" value="${sources}" class="curSources">
+<button type="button" class="updateDataButton" onclick="$.post('/updateData',{sources : $('.curSources').val()}); location.reload()">
+    <span class="glyphicon glyphicon-refresh"></span>
+</button>
 <table class="js-dynamitable     table table-bordered">
     <thead>
     <TR>
@@ -48,11 +53,21 @@
         <th><input class="js-filter form-control" type="text" value=""></th>
         <th><select class="js-filter  form-control">
             <option value=""></option>
-            <option value="HORDE">HORDE</option>
-            <option value="ALIANCE">ALIANCE</option>
+            <c:forEach items="${factions}" var="faction">
+            <c:if test="${faction == null}">
+            <<
+            <continue>>>
+                </c:if>
+                <option value="${faction}">${faction}</option>
+                </c:forEach>
         </select></th>
         <th><input class="js-filter form-control" type="text" value=""></th>
-        <th><input class="js-filter form-control" type="text" value=""></th>
+        <th><select class="js-filter  form-control">
+            <option value=""></option>
+            <c:forEach items="${sourcesList}" var="source">
+                <option value="${source}">${source}</option>
+            </c:forEach>
+        </select></th>
         <th><input class="js-filter form-control" type="text" value=""></th>
         <th><input class="js-filter form-control" type="text" value=""></th>
         <th><input class="js-filter form-control" type="text" value=""></th>

@@ -7,6 +7,7 @@ import ru.qupol.exception.parser.ValuteLoadException;
 import ru.qupol.model.valute.ValCurs;
 import ru.qupol.model.valute.Valute;
 
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -25,7 +26,12 @@ public class ValuteExtractService {
     private Date loadDate = null;
     private List<Valute> valutes = null;
 
-    public List<Valute> ExtractXMLCurrencies() throws ValuteLoadException {
+    @PostConstruct
+    private void init() throws ValuteLoadException {
+        extractXMLCurrencies();
+    }
+
+    public List<Valute> extractXMLCurrencies() throws ValuteLoadException {
 
         long lifetime = 1000 * 60 * 60 * 24; // 1 day
         if (loadDate == null || (new Date()).after(new Date(loadDate.getTime() + lifetime))) {
@@ -33,9 +39,8 @@ public class ValuteExtractService {
             valutes = loadXMLCurrencies();
         }
         return valutes;
-
-
     }
+
 
     /**
      * 3 chars code, example USD, EUR
@@ -44,7 +49,7 @@ public class ValuteExtractService {
      * @return valute
      */
     public Valute getValuteByCode(String charCode) throws ValuteLoadException {
-        List<Valute> valutes = ExtractXMLCurrencies();
+        List<Valute> valutes = extractXMLCurrencies();
         return valutes.stream().filter(valute -> valute.getCharCode().equals(charCode)).findFirst().orElseThrow();
     }
 
