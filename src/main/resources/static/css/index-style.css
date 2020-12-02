@@ -1,0 +1,14 @@
+.container {
+    display: inline-block;
+    height: 500px;
+    width: auto;
+}
+
+.block {
+    width: auto;
+    padding: 10px;
+    margin: 5px;
+    height: auto;
+    background-color: #BFB193;
+    color: #8f99bf;
+}

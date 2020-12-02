@@ -16,7 +16,7 @@ public class ClassicRestController {
     @Autowired
     public LoadDataService loadDataService;
 
-    @GetMapping("/restprices")
+    @GetMapping("/restclassic")
     public String restPrices() {
         ObjectMapper mapper = new ObjectMapper();
         String s = null;

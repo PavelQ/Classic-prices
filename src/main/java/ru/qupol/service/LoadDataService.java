@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import ru.qupol.model.Price;
 import ru.qupol.model.ServerStatus;
 import ru.qupol.parser.*;
+import ru.qupol.parser.actual.FunpayRuEuActualSourceParser;
+import ru.qupol.parser.actual.PwlvlRuActualSourceParser;
 import ru.qupol.parser.status.EuStatusParser;
 
 import javax.annotation.PostConstruct;
@@ -15,8 +17,10 @@ import java.util.*;
 @Service
 public class LoadDataService {
     private final Logger LOGGER = LoggerFactory.getLogger(LoadDataService.class);
-    private Map<String, Set<SourceCacheHolder>> parserHoldersSet;
+    private Map<String, Set<SourceCacheHolder>> classicParserHoldersSetMap;
+    private Map<String, Set<SourceCacheHolder>> actualParserHoldersSetMap;
 
+    //    classic
     @Autowired
     private PwlvlEuSourceParcer pwlvlEuSourceParser;
 
@@ -32,9 +36,17 @@ public class LoadDataService {
     @Autowired
     private PlayerAuctionsSourceParser playerAuctionsSourceParser;
 
+    //    actual
+    @Autowired
+    private FunpayRuEuActualSourceParser funpayRuEuActualSourceParser;
+
+    @Autowired
+    private PwlvlRuActualSourceParser pwlvlRuActualSourceParser;
+
     @PostConstruct
     public void postConstruct() {
-        parserHoldersSet = initParserHolders();
+        classicParserHoldersSetMap = initParserHoldersClassic();
+        actualParserHoldersSetMap = initParserHoldersActual();
     }
 
     private void setPopulations(List<Price> prices) {
@@ -47,14 +59,21 @@ public class LoadDataService {
     }
 
     public List<Price> takeAllDataSorted(String sources) {
-        List<Price> priceList = loadData(sources);
+        List<Price> priceList = loadClassicData(sources);
         Collections.sort(priceList);
         setPopulations(priceList);
         return priceList;
     }
 
-    private Map<String, Set<SourceCacheHolder>> initParserHolders() {
-        LOGGER.info("init parsers");
+    public List<Price> takeAllDataSortedActual(String sources) {
+        List<Price> priceList = loadActualData(sources);
+        Collections.sort(priceList);
+//        setPopulations(priceList);
+        return priceList;
+    }
+
+    private Map<String, Set<SourceCacheHolder>> initParserHoldersClassic() {
+        LOGGER.info("init parsers classic");
         Map<String, Set<SourceCacheHolder>> map = new HashMap<>();
         map.put("pw", new HashSet<>() {{
             add(new SourceCacheHolder(pwlvlEuSourceParser));
@@ -65,48 +84,82 @@ public class LoadDataService {
             add(new SourceCacheHolder(funpayRuSourceParser));
         }});
         map.put("pa", Collections.singleton(new SourceCacheHolder(playerAuctionsSourceParser)));
-        int parsersCount = map.values().stream().map(Set::size).reduce(0, Integer::sum);
-        LOGGER.info("parsers initiated: " + parsersCount);
+        int parsersCount = getParsersCount(map);
+        LOGGER.info("parsers classic initiated: " + parsersCount);
         return map;
     }
 
-    private List<Price> loadData(String sources) {
-        Set<SourceCacheHolder> cachesToLoad = cachesToLoadBySources(sources);
+    private Map<String, Set<SourceCacheHolder>> initParserHoldersActual() {
+        LOGGER.info("init parsers actual");
+        Map<String, Set<SourceCacheHolder>> map = new HashMap<>();
+        map.put("pw", new HashSet<>() {{
+            add(new SourceCacheHolder(pwlvlRuActualSourceParser));
+        }});
+        map.put("f", new HashSet<>() {{
+            add(new SourceCacheHolder(funpayRuEuActualSourceParser));
+        }});
+        int parsersCount = getParsersCount(map);
+        LOGGER.info("parsers actual initiated: " + parsersCount);
+        return map;
+    }
+
+    private int getParsersCount(Map<String, Set<SourceCacheHolder>> map) {
+        return map.values().stream().map(Set::size).reduce(0, Integer::sum);
+    }
+
+    private List<Price> loadData(Set<SourceCacheHolder> cachesToLoad) {
         List<Price> dataList = new ArrayList<>();
         LOGGER.info("starting parsers work");
         cachesToLoad.forEach(cacheToLoad -> dataList.addAll(cacheToLoad.loadData(false)));
         return dataList;
+    }
 
+    private List<Price> loadClassicData(String sources) {
+        Set<SourceCacheHolder> cachesToLoad = cachesToLoadBySources(sources);
+        return loadData(cachesToLoad);
+    }
+
+    private List<Price> loadActualData(String sources) {
+        Set<SourceCacheHolder> cachesToLoad = cachesToLoadActualBySources(sources);
+        return loadData(cachesToLoad);
     }
 
     public void updateData(String sources) {
         Set<SourceCacheHolder> sourcesToUpdate = cachesToLoadBySources(sources);
         LOGGER.info("starting parsers work");
-        parserHoldersSet.values().forEach(
+        classicParserHoldersSetMap.values().forEach(
                 sourceCacheHolders -> sourcesToUpdate.forEach(
                         sourceCacheHolder -> sourceCacheHolder.loadData(true)
                 )
         );
     }
 
-    private Set<SourceCacheHolder> cachesToLoadBySources(String sources) {
+    private Set<SourceCacheHolder> cachesToLoadBySources(String sources, Map<String, Set<SourceCacheHolder>> parserHoldersSetMap) {
         LOGGER.info("preparing parsers");
-        Set<String> parserCodes = parserHoldersSet.keySet();
+        Set<String> parserCodes = parserHoldersSetMap.keySet();
         Set<SourceCacheHolder> cachesToLoad = new HashSet<>();
         if (sources == null || sources.isEmpty()) {
             LOGGER.info("loads all of parsers");
-            for (Set<SourceCacheHolder> set : parserHoldersSet.values()) {
+            for (Set<SourceCacheHolder> set : parserHoldersSetMap.values()) {
                 cachesToLoad.addAll(set);
             }
         } else {
             for (String parserCode : parserCodes) {
                 if (sources.contains(parserCode)) {
                     LOGGER.info("loads parser: " + parserCode);
-                    cachesToLoad.addAll(parserHoldersSet.get(parserCode));
+                    cachesToLoad.addAll(parserHoldersSetMap.get(parserCode));
                 }
             }
         }
         return cachesToLoad;
+    }
+
+    private Set<SourceCacheHolder> cachesToLoadBySources(String sources) {
+        return cachesToLoadBySources(sources, classicParserHoldersSetMap);
+    }
+
+    private Set<SourceCacheHolder> cachesToLoadActualBySources(String sources) {
+        return cachesToLoadBySources(sources, actualParserHoldersSetMap);
     }
 
 }

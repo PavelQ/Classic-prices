@@ -21,9 +21,21 @@ public class MainJspController {
     public LoadDataService loadDataService;
 
 
-    @RequestMapping(value = {"/prices", "/"})
+    @RequestMapping(value = {"/classic"})
     public String prices(@RequestParam(name = "sources", required = false) String sources, Model model) {
         List<Price> priceList = loadDataService.takeAllDataSorted(sources);
+        modelPreparation(sources, model, priceList);
+        return "prices";
+    }
+
+    @RequestMapping(value = {"/actual"})
+    public String pricesActual(@RequestParam(name = "sources", required = false) String sources, Model model) {
+        List<Price> priceList = loadDataService.takeAllDataSortedActual(sources);
+        modelPreparation(sources, model, priceList);
+        return "prices";
+    }
+
+    private void modelPreparation(String sources, Model model, List<Price> priceList) {
         String message = sources == null ? "" : "Data generated with next params:" + sources;
         List<String> sourcesList = priceList.stream().map(price -> price.getSource().toString()).distinct().collect(Collectors.toList());
         List<GameServer.Faction> factionsList = priceList.stream().map(price -> price.getServer().getFaction()).distinct().collect(Collectors.toList());
@@ -32,7 +44,6 @@ public class MainJspController {
         model.addAttribute("factions", factionsList);
         model.addAttribute("sourcesList", sourcesList);
         model.addAttribute("sources", sources);
-        return "prices";
     }
 
     @PostMapping(value = {"/updateData"})

@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import ru.qupol.parser.*;
+import ru.qupol.parser.actual.FunpayRuEuActualSourceParser;
+import ru.qupol.parser.actual.PwlvlRuActualSourceParser;
 
 @Configuration
 public class SourceParserConfiguration {
@@ -42,4 +44,17 @@ public class SourceParserConfiguration {
     public FunpayRuSourceParser getFunpayRuSourceParser() {
         return new FunpayRuSourceParser();
     }
+
+
+    //actual
+    @Bean
+    public FunpayRuEuActualSourceParser getFunpayRuEuActualSourceParser(){
+        return new FunpayRuEuActualSourceParser();
+    }
+
+    @Bean
+    public PwlvlRuActualSourceParser getPwlvlRuActualSourceParser(){
+        return new PwlvlRuActualSourceParser();
+    }
+
 }

@@ -1,6 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="java.util.stream.Collectors" %>
+<%--<%@ page import="java.util.stream.Collectors" %>--%>
 <html>
 <head>
     <meta charset="WIN-1251"/>
@@ -14,9 +14,9 @@
 <body>
 <h1>${message}</h1>
 <input type="hidden" value="${sources}" class="curSources">
-<button type="button" class="updateDataButton" onclick="$.post('/updateData',{sources : $('.curSources').val()}); location.reload()">
-    <span class="glyphicon glyphicon-refresh"></span>
-</button>
+<%--<button type="button" class="updateDataButton" onclick="$.post('/updateData',{sources : $('.curSources').val()}); location.reload()">--%>
+<%--    <span class="glyphicon glyphicon-refresh"></span>--%>
+<%--</button>--%>
 <table class="js-dynamitable     table table-bordered">
     <thead>
     <TR>
