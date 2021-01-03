@@ -1,13 +1,35 @@
 package ru.qupol.model;
 
+import javax.persistence.*;
 import java.util.Objects;
 
+@Entity
+@Table(name = "GAMES_SERVERS")
 public class GameServer implements Comparable<GameServer> {
+    public GameServer() {
+//        gameServerId = new GameServerId();
+    }
+
+    @Id
+    @GeneratedValue
+    private long Id;
+
+    @Column
     private String name;
+    //
+    @Column
     private Faction faction;
 
     public GameServer(String name) {
         this.name = name;
+    }
+
+    public long getId() {
+        return Id;
+    }
+
+    public void setId(long id) {
+        Id = id;
     }
 
     public String getName() {
@@ -28,14 +50,14 @@ public class GameServer implements Comparable<GameServer> {
 
     @Override
     public int compareTo(GameServer o) {
-        int comp = this.name.compareTo(o.name);
+        int comp = this.getName().compareTo(o.getName());
         if (comp == 0) {
-            if (this.faction == null && o.faction == null) {
+            if (this.getFaction() == null && o.getFaction() == null) {
                 return 0;
-            } else if (this.faction != null && o.faction != null) {
-                return this.faction.compareTo(o.faction);
+            } else if (this.getFaction() != null && o.getFaction() != null) {
+                return this.getFaction().compareTo(o.getFaction());
             } else {
-                if (this.faction != null)
+                if (this.getFaction() != null)
                     return 1;
                 else
                     return -1;
@@ -51,8 +73,9 @@ public class GameServer implements Comparable<GameServer> {
     @Override
     public String toString() {
         return "GameServer{" +
-                "name='" + name + '\'' +
-                ", faction=" + faction +
+                "name='" + getName() + '\'' +
+                ", faction=" + getFaction() +
+                ", id=" + getId() +
                 '}';
     }
 
@@ -61,12 +84,12 @@ public class GameServer implements Comparable<GameServer> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GameServer that = (GameServer) o;
-        return Objects.equals(name, that.name) &&
-                faction == that.faction;
+        return Objects.equals(getName(), that.getName()) &&
+                getFaction() == that.getFaction();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, faction);
+        return Objects.hash(getName(), getFaction());
     }
 }

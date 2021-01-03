@@ -6,3 +6,4 @@ table tbody tr:hover {background: #BFBBAE;}
 tr.alliance-row {background: #8f99bf;}
 tr.horde-row {background: #bf9f9a;}
 .updateDataButton { width: auto; height: auto; background-color: #BFBBAE;  color: black}
+label#label-result {color: #28a745;}

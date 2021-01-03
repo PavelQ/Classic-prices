@@ -13,3 +13,7 @@ Uses some sources for parse prices
 
 `heroku local -f ./testEnv/Procfile`
 
+**Database setup**
+
+Please make sure to rename default-db.properties to db.properties with changing internal properies to your own 
+

@@ -1,7 +1,6 @@
 package ru.qupol.service;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.qupol.model.Price;
@@ -10,13 +9,14 @@ import ru.qupol.parser.*;
 import ru.qupol.parser.actual.FunpayRuEuActualSourceParser;
 import ru.qupol.parser.actual.PwlvlRuActualSourceParser;
 import ru.qupol.parser.status.EuStatusParser;
+import ru.qupol.utils.SlfLogger;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
 public class LoadDataService {
-    private final Logger LOGGER = LoggerFactory.getLogger(LoadDataService.class);
+    private final Logger LOGGER = SlfLogger.getLogger();
     private Map<String, Set<SourceCacheHolder>> classicParserHoldersSetMap;
     private Map<String, Set<SourceCacheHolder>> actualParserHoldersSetMap;
 

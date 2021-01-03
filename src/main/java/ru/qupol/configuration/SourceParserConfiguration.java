@@ -1,18 +1,18 @@
 package ru.qupol.configuration;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import ru.qupol.parser.*;
 import ru.qupol.parser.actual.FunpayRuEuActualSourceParser;
 import ru.qupol.parser.actual.PwlvlRuActualSourceParser;
+import ru.qupol.utils.SlfLogger;
 
 @Configuration
 public class SourceParserConfiguration {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SourceParserConfiguration.class);
+    private static final Logger LOGGER = SlfLogger.getLogger();
 
     static {
         LOGGER.info("SourceParserConfiguration is loaded");
@@ -48,12 +48,12 @@ public class SourceParserConfiguration {
 
     //actual
     @Bean
-    public FunpayRuEuActualSourceParser getFunpayRuEuActualSourceParser(){
+    public FunpayRuEuActualSourceParser getFunpayRuEuActualSourceParser() {
         return new FunpayRuEuActualSourceParser();
     }
 
     @Bean
-    public PwlvlRuActualSourceParser getPwlvlRuActualSourceParser(){
+    public PwlvlRuActualSourceParser getPwlvlRuActualSourceParser() {
         return new PwlvlRuActualSourceParser();
     }
 

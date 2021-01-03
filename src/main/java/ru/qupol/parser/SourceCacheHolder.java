@@ -1,15 +1,15 @@
 package ru.qupol.parser;
 
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.qupol.model.Price;
+import ru.qupol.utils.SlfLogger;
 
 import java.util.Date;
 import java.util.List;
 
 public class SourceCacheHolder {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SourceCacheHolder.class);
+    private static final Logger LOGGER = SlfLogger.getLogger();
 
     private SourceParcer sourceParcer;
 
